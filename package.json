@@ -6,7 +6,7 @@
   "scripts": {
     "build:dev": "mkdir -p ./dist && webpack --config webpack.dev.js",
     "build:prod": "mkdir -p ./dist && webpack --config webpack.prod.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha \"src/js/**/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -28,6 +28,7 @@
     "crx-webpack-plugin": "^0.1.5",
     "eslint": "^5.7.0",
     "html-webpack-plugin": "^3.2.0",
+    "mocha": "^5.2.0",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2",
     "webpack-merge": "^4.1.4",
