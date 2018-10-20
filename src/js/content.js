@@ -25,6 +25,6 @@ let addVersionToButton = function(version) {
 };
 
 let githubApi = new GithubApi(repoPath, pr, secrets.oauthToken);
-githubApi.searchFiles('version', addVersionToButton);
-githubApi.getBranches();
-githubApi.getFilesInPr();
+githubApi.getBaseVersion().then((version) => {
+    addVersionToButton(version)
+});
