@@ -10,11 +10,11 @@ class GithubApi {
         this._token = token;
     };
 
-    getBaseVersion() {
+    getVersion(base) {
         return new Promise((resolve) => {
             this.getBranches()
                 .then(() => this.getVersionPath())
-                .then((path) => this.getVersionFromFile(path))
+                .then((path) => this.getVersionFromFile(path, base))
                 .then((version) => resolve(version))
         })
     }
@@ -53,11 +53,11 @@ class GithubApi {
         });
     };
 
-    getVersionFromFile(path) {
+    getVersionFromFile(path, base) {
         const versionRegex = new RegExp(/[0-9]+.[0-9]+.[0-9]+/);
         let url = 'https://api.github.com/repos/';
             url += `${this._repo}/contents/${path}`;
-            url += `?ref=${this._base}`;
+            url += `?ref=${base ? this._base : this._head}`;
             url += `&access_token=${this._token}`;
 
         return new Promise((resolve, reject) => {
