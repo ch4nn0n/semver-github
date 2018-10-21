@@ -43,7 +43,7 @@ class Semver {
 
         if (2 > dMajor && dMajor >= 1 && dMinor === 0 && dPatch === 0) {
             return true;
-        } else if (dMajor === 0 && 2 > dMinor && dMajor >= 1 === 0 && dPatch === 0) {
+        } else if (dMajor === 0 && 2 > dMinor && dMinor >= 1 && dPatch === 0) {
             return true;
         } else if (dMajor === 0 && dMinor === 0 && 2 > dPatch && dPatch >= 1) {
             return true;
