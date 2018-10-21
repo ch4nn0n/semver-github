@@ -1,4 +1,5 @@
 const $ = require('jquery');
+
 const Semver = require('./semver.js');
 
 const versionRegex = new RegExp(/[0-9]+.[0-9]+.[0-9]+/);
@@ -54,7 +55,7 @@ class GithubApi {
     getVersion(base) {
         return new Promise((resolve) => {
             this.getVersionPath()
-                .then((path) => this.getVersionFromFile(path, base))
+                .then(() => this.getVersionFromFile(base))
                 .then((version) => resolve(version))
         })
     }
@@ -68,7 +69,8 @@ class GithubApi {
             $.get(url, (files) => {
                 files.items.forEach((file) => {
                     if (file.name === rubyVersionFile) {
-                        return resolve(file.path);
+                        this._path = file.path;
+                        return resolve();
                     }
                 });
             }).fail((err) => {
@@ -77,9 +79,9 @@ class GithubApi {
         });
     };
 
-    getVersionFromFile(path, base) {
+    getVersionFromFile(base) {
         let url = 'https://api.github.com/repos/';
-            url += `${this._repo}/contents/${path}`;
+            url += `${this._repo}/contents/${this._path}`;
             url += `?ref=${base ? this._base : this._head}`;
             url += `&access_token=${this._token}`;
 
@@ -88,11 +90,52 @@ class GithubApi {
                 let content = Buffer.from(data.content, 'base64').toString('UTF-8');
                 let version = content.match(versionRegex)[0];
 
+                base ? this._baseSha = data.sha : this._headSha = data.sha;
+
                 resolve(version);
             }).fail((err) => {
                 reject(err)
             });
         });
+    };
+
+    bumpVersion() {
+        let version = this.getBaseVersion();
+            version.bumpMajor();
+            version = version.toString();
+        let template =
+`# frozen_string_literal: true
+
+module GamingEngine
+    VERSION = '${version}'
+end
+
+`;
+        let content = Buffer.from(template).toString('base64');
+
+        let url = 'https://api.github.com/repos/';
+            url += `${this._repo}/contents/${this._path}`;
+            url += `?access_token=${this._token}`;
+
+        let body = {
+            message: `Bump version to: ${version}`,
+            content: content,
+            sha: this._headSha,
+            branch: this._head
+        };
+
+        return new Promise((resolve) => {
+            $.ajax({
+                url: url,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify(body),
+                success: function(result) {
+                    console.log(result);
+                    resolve();
+                }
+            })
+        })
     };
 }
 

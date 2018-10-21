@@ -25,6 +25,7 @@ let addVersionToButton = function(version) {
         .html(`Master version: ${version}`)
         .removeAttr('disabled')
         .click(() => {
+            githubApi.bumpVersion();
             console.log('click');
         });
 };

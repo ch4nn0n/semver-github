@@ -18,6 +18,12 @@ class Semver {
         return string;
     };
 
+    bumpMajor() {
+        this._major += 1;
+        this._minor = 0;
+        this._patch = 0;
+    }
+
     bumpMajorFrom(baseVersion) {
         this._major = baseVersion._major + 1;
         this._minor = 0;
