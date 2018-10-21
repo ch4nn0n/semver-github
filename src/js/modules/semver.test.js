@@ -15,23 +15,23 @@ describe('SemVer', function() {
             assert.equal(semver.toString(),'0.0.0');
         });
     });
-    describe('#bumpMajor()', () => {
+    describe('#bumpMajorFrom()', () => {
         it('should put bump the major version', () => {
             let semver = new SemVer('0.0.0');
             let baseSemver = new SemVer('0.0.1');
 
             semver.bumpMajorFrom(baseSemver);
-            assert.equal(semver.toString(),'1.0.1');
+            assert.equal(semver.toString(),'1.0.0');
         });
     });
-    describe('#bumpMinor()', () => {
+    describe('#bumpMinorFrom()', () => {
         it('should put bump the minor version', () => {
             let semver = new SemVer('0.0.0');
             let baseSemver = new SemVer('0.0.1');
 
 
             semver.bumpMinorFrom(baseSemver);
-            assert.equal(semver.toString(),'0.1.1',);
+            assert.equal(semver.toString(),'0.1.0',);
         });
     });
     describe('#bumpPatchFrom()', () => {

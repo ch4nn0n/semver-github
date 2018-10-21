@@ -20,14 +20,14 @@ class Semver {
 
     bumpMajorFrom(baseVersion) {
         this._major = baseVersion._major + 1;
-        this._minor = baseVersion._minor;
-        this._patch = baseVersion._patch;
+        this._minor = 0;
+        this._patch = 0;
     };
 
     bumpMinorFrom(baseVersion) {
         this._major = baseVersion._major;
         this._minor = baseVersion._minor + 1;
-        this._patch = baseVersion._patch;
+        this._patch = 0;
     };
 
     bumpPatchFrom(baseVersion) {
