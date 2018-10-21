@@ -1,5 +1,7 @@
 const $ = require('jquery');
+const Semver = require('./semver.js');
 
+const versionRegex = new RegExp(/[0-9]+.[0-9]+.[0-9]+/);
 const rubyVersionFile = 'version.rb';
 
 class GithubApi {
@@ -10,13 +12,27 @@ class GithubApi {
         this._token = token;
     };
 
-    getVersion(base) {
+    getVersions() {
         return new Promise((resolve) => {
-            this.getBranches()
-                .then(() => this.getVersionPath())
-                .then((path) => this.getVersionFromFile(path, base))
-                .then((version) => resolve(version))
-        })
+            let branchesPromise = this.getBranches();
+            let basePromise = branchesPromise.then(() => this.getVersion(true));
+            let headPromise = branchesPromise.then(() => this.getVersion(false));
+
+            Promise.all([basePromise, headPromise]).then((versions) => {
+                this._baseVersion = new Semver(versions[0]);
+                this._headVersion = new Semver(versions[1]);
+
+                resolve();
+            })
+        });
+    }
+
+    getBaseVersion() {
+        return this._baseVersion;
+    }
+
+    getHeadVersion() {
+        return this._headVersion;
     }
 
     getBranches() {
@@ -34,6 +50,14 @@ class GithubApi {
             })
         });
     };
+
+    getVersion(base) {
+        return new Promise((resolve) => {
+            this.getVersionPath()
+                .then((path) => this.getVersionFromFile(path, base))
+                .then((version) => resolve(version))
+        })
+    }
 
     getVersionPath() {
         let url = 'https://api.github.com/search/code?';
@@ -54,7 +78,6 @@ class GithubApi {
     };
 
     getVersionFromFile(path, base) {
-        const versionRegex = new RegExp(/[0-9]+.[0-9]+.[0-9]+/);
         let url = 'https://api.github.com/repos/';
             url += `${this._repo}/contents/${path}`;
             url += `?ref=${base ? this._base : this._head}`;

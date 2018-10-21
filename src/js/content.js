@@ -22,12 +22,20 @@ $('.merge-message').append(e);
 //add ruby version to button
 let addVersionToButton = function(version) {
     $('#version-button')
-        .html(`Version: ${version}`)
+        .html(`Master version: ${version}`)
         .removeAttr('disabled')
         .click(() => {
             console.log('click');
         });
 };
 
+let addVersionAfterButton = function(version) {
+    $('#version-button')
+        .after(`Current version: ${version}`)
+};
+
 let githubApi = new GithubApi(repoPath, pr, secrets.oauthToken);
-githubApi.getVersion(true).then((version) => addVersionToButton(version));
+githubApi.getVersions().then(() => {
+    addVersionToButton(githubApi.getHeadVersion());
+    addVersionAfterButton(githubApi.getBaseVersion());
+});
